@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<script src="js/jquery-2.1.3.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jrumble/1.3.0/jquery.jrumble.min.js" integrity="sha512-0vcUK0oQ15FtIrg1bbNL6zO2yB0pSZjPZERBNA0ZXIw/7jsSHu+rxxbpbM20wIaiEofTK9oPoP/Y8xvh3qoasQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<link rel="stylesheet" href="css/reset.css">
+<link rel="stylesheet" href="css/sample.css">
+<title>Smoking Kills</title>
+</head>
+<body>
+
+  <!-- オープニングアニメーション -->
+  <div class="start" id = "start">
+    <div class="start_text">
+      <h1>Smoking Kills</h1>
+      <h2>for your good life</h2>
+      <img src="./img/ペンギングレー.png" id="gpimg">
+    </div>
+    <div class="start_video">
+      <video src="./movie/イントロ反転トリム.mp4" autoplay muted></video>
+    </div>
+  </div>
+
+
+  <!-- タイトル -->
+  <header id="header">
+    <h1>Smoking Kills</h1>
+  </header>
+
+
+  <main>
+    <!-- 入力画面 -->
+    <div class="input_area" id="input_area">
+      <div class="intro">
+        <p>1日の上限本数とタバコ1箱の値段を登録しましょう。</p>
+        <P>1日20本以上は禁止です</P>
+      </div>
+      <div class="input_area_honsu">
+        <h2><span>Maximum Limit</span></h2>
+        <input type="text" class="input_honsu" id="input_honsu">
+      </div>
+      <div class="input_area_price">
+        <h2><span>Price</span></h2>
+        <input type="text" class="input_price" id="input_price">
+      </div>
+      <div class="input_area_btn">
+        <button id="btn">Submit</button>
+      </div>
+      <div class="img_area">
+        <img src="./img/ペンギンあお.PNG" alt="" id="pimg">
+      </div>
+    </div>
+
+    <!-- 入力後画面 -->
+    <div class="output_area" id="output_area">
+      <div class="output_area_top">
+        <p>smoking causes ....</p>
+      </div>
+      <!-- 吸引ボタンエリア -->
+      <div class="output_btn" id="output_btn">
+        <button class="outbtn" id="outbtn">Smoke</button>
+      </div>
+      <!-- 表示エリア -->
+      <div class="output_area_view">
+        <div class="view_zan">
+          <h2>Remaining</h2>
+          <div class="honsu_output" id="honsu_output"></div>
+        </div>
+        <div class="view_totalprice">
+          <h2>Your total is</h2>
+          <div class="output_price" id="output_price"></div>
+        </div>
+      </div>
+      <div class="outputimg">
+        <img src="./img/ペンギンあお.PNG" alt="" id="outpimg">
+      </div>
+
+    </div>
+
+  </main>
+
+
+<script>
+  //オープニング動画 のフェードアウトアニメーション
+  $ ("#start").fadeOut(7000);
+
+  //オープニング動画終了後の画面切り替え
+  setTimeout(function(){
+    $("#header").show();
+    $("#input_area").show();
+  },7000);
+
+
+//入力画面
+//入力欄画像横アニメーション   ペンギンが横に移動
+$("#pimg").animate({ marginLeft: "80%", }, 4000, "linear", function () {
+	$("#pimg").animate({ marginLeft: "0%" }, 4000,"linear", function() {
+    $("#pimg").animate({ marginLeft: "80%", }, 4000, "linear", function () {
+      $("#pimg").animate({ marginLeft: "0%" }, 4000,"linear", function() {
+        $("#pimg").animate({ marginLeft: "60%" }, 4000,"linear")
+      })
+    })
+  })
+});
+//ペンギンをプルプル震わせる
+$("#pimg").jrumble({
+  x: 0,
+	y: 0,
+	rotation: 5,
+  speed: 100
+});
+$("#pimg").trigger('startRumble')
+
+
+//出力画面
+//ペンギンをプルプル震わせる
+$("#outpimg").jrumble({
+  x: 0,
+	y: 0,
+	rotation: 5,
+  speed: 100
+});
+$("#outbtn").hover(function(){
+	$("#outpimg").trigger('startRumble');
+}, function(){
+	$("#outpimg").trigger('stopRumble');
+});
+
+
+
+
+//ここから先は禁止
+//グローバル変数
+let honsu = ""; //上限本数 変動
+let cshonsu = ""; //上限本数 固定
+let price = ""; //一箱あたりの金額
+let total_price = 0;  //トータル金額初期値
+
+
+  //入力欄ボタンクリック時イベント
+  $(btn).on("click", function(){
+
+    //上限本数を数列で取得
+    let input = $("#input_honsu").val();
+    honsu  = Number(input);   //上限本数
+    cshonsu = Number(input);
+    //一箱の値段を数列で取得
+    let input2 = $("#input_price").val();
+    price  = Number(input2);  //一箱の料金 
+    $("#honsu_output").text(honsu);
+    $("#output_price").text("¥" + total_price);
+    // alert(honsu)
+    $("#input_area").hide();
+    $("#output_area").show();
+  })
+
+  //カウント欄 クリックイベント
+  $("#outbtn").on("click", function(){
+    honsu -= 1;  //本数を減らす
+    let priceone = price / 20; //一本あたりの値段
+    // let total_price = 0;  //トータル金額初期値
+    $("#honsu_output").text(honsu);
+    //残本数 更新
+    //トータル金額のif文
+    if( total_price == 0){
+      total_price = priceone
+      $("#output_price").text("¥" + total_price);
+    }else{
+      total_price  = total_price + priceone;
+      $("#output_price").text("¥" + total_price);
+    }
+
+    //残本数ごとにボタンの色と、テキストを変更する
+    if(honsu >= cshonsu*0.75){
+      $("#outbtn").removeClass("button");
+      $("#outbtn").addClass("level1");
+    }else if(honsu >= cshonsu*0.5){
+      $("#outbtn").removeClass("button");
+      $("#outbtn").addClass("level2");
+    }else if(honsu >= cshonsu*0.25){
+      $("#outbtn").removeClass("button");
+      $("#outbtn").addClass("level3");
+    }else if(honsu > 0){
+      $("#outbtn").removeClass("button");
+      $("#outbtn").addClass("level4");
+    }
+
+  });
+
+    
+</script>
+
+
+</body>
+</html>
