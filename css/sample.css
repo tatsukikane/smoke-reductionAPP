@@ -228,3 +228,17 @@ span{
     background: red;
 }
 
+
+
+/* 時間エリア */
+.date_are{
+    color: white;
+    font-size: 40px;
+}
+
+
+
+/* デイリーリスト */
+.output_list table{
+    color: white;
+}
