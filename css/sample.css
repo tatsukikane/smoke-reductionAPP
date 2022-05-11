@@ -121,6 +121,18 @@ span{
     font-family: Comic Sans MS;
     font-size: 20px;
 }
+.kakunin_btn{
+    margin-top: 30px;
+    text-align: center;  
+}
+.kakunin_btn button{
+    width: 90px;
+    height: 40px;
+    border-radius: 50px;
+    background: #1e90ff;
+    font-family: Comic Sans MS;
+    font-size: 20px;
+}
      /* 入力エリアペンギン画像 */
 .img_area{
     overflow: hidden;
@@ -234,11 +246,28 @@ span{
 .date_are{
     color: white;
     font-size: 40px;
+    margin-bottom: 50px;
 }
 
 
 
 /* デイリーリスト */
-.output_list table{
+.list_area{
+    display: none;
+}
+.list_table{
     color: white;
+    width: 100%;
+}
+.list_table th{
+    font-size: 25px;
+    padding-right: 50px;
+    text-align: start;
+}
+.list_table td{
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-right: 50px;
+    font-size: 20px;
+    background-color: rgba(0, 0, 0,0.7);
 }

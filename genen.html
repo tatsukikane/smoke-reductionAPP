@@ -49,7 +49,7 @@
         <button id="btn">Submit</button>
       </div>
       <div class="kakunin_btn">
-        <button id="kakunin_btn">確認</button>
+        <button id="kakunin_btn">Daily</button>
       </div>
       <div class="img_area">
         <img src="./img/ペンギンあお.PNG" alt="" id="pimg">
@@ -82,23 +82,22 @@
 
     </div>
 
-    <div class="list_area">
+    <!-- 日々記録表示欄 -->
+    <div class="list_area" id="list_area">
       <div class="date_are">
         <p id ="nowdate"></p>
       </div>
       <div class="output_list" >
-        <table id="list_table">
+        <table id="list_table" class="list_table">
           <tr>
             <th>日付</th>
             <th>本数</th>
             <th>金額</th>
           </tr>
-          <tr>
-            <td id="list_date"></td>
-            <td id="list_hon"></td>
-            <td id="list_price"></td>
-          </tr>
         </table>
+      </div>
+      <div class = "daily_button_area">
+        <button id="daily_btn">Back</button>
       </div>
     </div>
 
@@ -152,7 +151,12 @@ $("#outbtn").hover(function(){
 });
 
 
+//------------------------------------------------------------------------------------
 
+// function setvalues(back_data_list){
+//   out_date = back_data_list[0].date
+//   console.log(out_date);
+// }
 
 
 //ここから先は禁止
@@ -162,9 +166,29 @@ let cshonsu = ""; //上限本数 固定
 let price = 0; //一箱あたりの金額
 let total_price = 0;  //トータル金額初期値
 
-let last_price = localStorage.getItem("tprice"); //ローカルストレージ上 トータル金額
-// let a = $.isNumeric(last_price); 数列判断
-// alert(a); 
+//ローカルデータ用変数
+let data_list = [
+    // {date:"****/**/**",honsu:"本数",price:"金額"},
+  ]
+
+//日付用変数
+  let todaydata = new Date(); 
+  let year = todaydata.getFullYear(); //現在年
+  let month = todaydata.getMonth() + 1; //現在月
+  let day = todaydata.getDate();      //現在日
+  let time =  `${year}年${month}月${day}日`;  //年月日
+
+//本数 料金 変数 
+    //json形式から戻して、「配列を持ったオブジェクト」を変数に代入
+    let back_data_list = "" //JSON.parse(localStorage.getItem("data_list"));
+    let out_honsu = ""
+    let out_plice =  ""
+    // console.log(back_data_list[0].date);
+    // console.log(out_date)
+//--------------------------------------------------------------------------------------------
+
+  //時間表示
+  $("#nowdate").text(time);
 
 
   //入力欄ボタンクリック時イベント
@@ -183,9 +207,6 @@ let last_price = localStorage.getItem("tprice"); //ローカルストレージ�
     $("#input_area").hide();
     $("#output_area").show();
 
-    //下記2行ローカルストレージに金額があった際は初期値として表示
-    tprice_data = localStorage.getItem("tprice");
-    $("#output_price").text(tprice_data);
   })
 
   //カウント欄 クリックイベント
@@ -193,7 +214,6 @@ let last_price = localStorage.getItem("tprice"); //ローカルストレージ�
     //残本数 更新
     honsu -= 1;  //本数を減らす
     let priceone = price / 20; //一本あたりの値段
-    // let total_price = 0;  //トータル金額初期値
 
     //残本数 更新
     $("#honsu_output").text(honsu);
@@ -203,18 +223,31 @@ let last_price = localStorage.getItem("tprice"); //ローカルストレージ�
     //トータル金額のif文
     if( total_price == 0){
       total_price = priceone
-      let hyouji_price = Number(total_price) + Number(last_price) 
-      $("#output_price").text("¥" + hyouji_price);
-      localStorage.setItem("tprice", total_price);  //ローカルストレージへ保存(price)
-      localStorage.setItem("honsu", honsu);   //ローカルストレージへ保存(honsu)
+      $("#output_price").text("¥" + total_price);
+      data_list.push({honsu:honsu, tprice:total_price, thonsu:cshonsu -honsu})           //配列にオブジェクトを追加
+      localStorage.setItem(time, JSON.stringify(data_list));                 //ストレージに保存
+      console.log(data_list)
+
+      back_data_list = JSON.parse(localStorage.getItem(time))
+      out_honsu = back_data_list[0].honsu
+      out_plice = back_data_list[0].tprice
+      console.log(out_honsu);
+      console.log(out_plice);
+
     }else{
       total_price  = total_price + priceone;
-      let hyouji_price = Number(total_price) + Number(last_price) 
-      $("#output_price").text("¥" + hyouji_price);
-      // $("#output_price").text("¥" + total_price);
-      const tprice = total_price;  //ローカルストレージ用変数　合計金額
-      localStorage.setItem("tprice", tprice);  //ローカルストレージへ保存(price)
-      localStorage.setItem("honsu", honsu);   //ローカルストレージへ保存(honsu)
+      $("#output_price").text("¥" + total_price);
+      $("#output_price").text("¥" + total_price);
+      data_list[0] = {honsu:honsu, tprice:total_price, thonsu:cshonsu -honsu}
+      localStorage.setItem(time, JSON.stringify(data_list));
+      console.log(data_list)
+
+      back_data_list = JSON.parse(localStorage.getItem(time)) //データ更新 リスト
+      out_honsu = back_data_list[0].honsu   //データ更新
+      out_plice = back_data_list[0].tprice
+      console.log(out_honsu);
+      console.log(out_plice);
+
     }
 
     //残本数ごとにボタンの色と、テキストを変更する
@@ -235,76 +268,67 @@ let last_price = localStorage.getItem("tprice"); //ローカルストレージ�
   });
 
 
-//日毎のデータ保存
+//日毎のデータ保存 表示
   //日付
-  $(function(){
-    setInterval(function(){
-      let todaydata = new Date(); 
-      let year = todaydata.getFullYear(); //現在年
-      let month = todaydata.getMonth() + 1; //現在月
-      let day = todaydata.getDate();      //現在日
-      let byou = todaydata.getSeconds(); //動作確認用
-      // alert(day);
+  // $(function(){
+  //   setInterval(function(){
+  //     let todaydata = new Date(); 
+  //     let year = todaydata.getFullYear(); //現在年
+  //     let month = todaydata.getMonth() + 1; //現在月
+  //     let day = todaydata.getDate();      //現在日
+  //     let byou = todaydata.getSeconds(); //動作確認用
+  //     $("#nowdate").text(time);
+  //   }, 10000);
+  // });
 
-      //日付表示欄
-      $("#nowdate").text(`${year}年${month}月${day}日${byou}`);
-    }, 10000);
-  });
+//日々の履歴確認ボタン
+$("#kakunin_btn").on("click", function(){
+  $("#input_area").hide();
+  $("#list_area").show();
 
-  //日付表示欄の表記が変わった際に本数と合計金額を保存
-  $("#nowdate").on('DOMSubtreeModified propertychange',function(){
-      let todaydata = new Date(); 
-      let year = todaydata.getFullYear(); //現在年
-      let month = todaydata.getMonth() + 1; //現在月
-      let day = todaydata.getDate();      //現在日
-      
+  for(let i=0; i<localStorage.length; i++){
+    let key = localStorage.key(i)
+    let output_data_list = JSON.parse(localStorage.getItem(key))
+    let output_data_list_honsu = output_data_list[0].thonsu
+    let output_data_list_total = output_data_list[0].tprice
+    // alert(output_data_list_honsu);
+    // alert(output_data_list_total);
 
-    const hkey =  `${year}年${month}月${day}日`;  //key日付
-
-
-    let ttprice = localStorage.getItem("tprice");  //ローカルストレージから金額取得
-    let last_honsu = localStorage.getItem("honsu"); //ローカルストレージから本数取得
-    let datalist = [ttprice,last_honsu]  //ローカルストレージに保存するようの配列
-
-    // let ttprice = $("#output_price").text();  //トータルプライス
-    // let datalist = [honsu, ttprice]      //value用並列
-    let jsdatalist = JSON.stringify(datalist);  //jsonに変換
-    localStorage.setItem(hkey, jsdatalist);   //ローカルストレージに保存
+    let append_table = '<tr><td>'+key+'</td><td>'+output_data_list_honsu+'</td><td>'+output_data_list_total+'</td></tr>'
+    $("#list_table").append(append_table);
+  }
+})
 
 
-    const hvalue = honsu;
-    // const pkey = new Date();
-    // const pvalue = $("#output_price").text();
-    // localStorage.setItem(hkey, hvalue);
-    // localStorage.setItem(pkey, pvalue);
+//確認画面からの戻るボタン
+$("#daily_btn").on("click", function(){
+  $("#input_area").show();
+  $("#list_area").hide();
+})
 
-  })
-//ここまで
 
-  //画面表示時にローカルストレージにデータがあるときは残本数を初期値として入力
+
+
+  //画面が開かれた時に、ローカルストレージにhonsuがあった場合はその値を入力欄初期値として挿入
   $(window).load(function () {
-    honsu_data = localStorage.getItem("honsu");
-    $("#input_honsu").val(honsu_data);
+    // honsu_data = localStorage.getItem("honsu");
+    back_data_list = JSON.parse(localStorage.getItem(time))
+    out_honsu = back_data_list[0].honsu
+
+    $("#input_honsu").val(out_honsu);
 });
 
 
 
-let output_date = localStorage.key(0)  //ローカルストレージから日にちを取得
-// alert(output_date);
-let output_json = localStorage.getItem(output_date);  //配列取得
-let output_list_last = JSON.parse(output_json);  //配列をjsonから変換
-// alert(output_list_last[0]);
-
-
-//確認ボタン挙動
-$("#kakunin_btn").on("click", function(){
-  $("#input_area").hide();
-  $("#list_date").text(output_date);
-  $("#list_hon").text(output_list_last[0]);
-  $("#list_price").text(output_list_last[1]);
-})
-
-
+//リロード時  にローカルホストにトータル金額があった場合、その数値をトータル金額に入力
+if (window.performance) {
+  if (performance.navigation.type === 1) {
+    // リロードされた時に実行したい処理
+    back_data_list = JSON.parse(localStorage.getItem(time))
+    out_plice = back_data_list[0].tprice
+    total_price += out_plice
+  }
+}
 </script>
 
 
